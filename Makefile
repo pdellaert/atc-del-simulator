@@ -50,7 +50,10 @@ clean-test: ## remove test and coverage artifacts
 lint/flake8: ## check style with flake8
 	flake8 --max-line-length=120 atc_del_simulator 
 
-lint: lint/flake8 ## check style
+lint/black: ## check style with black
+	black --line-length=120 --check atc_del_simulator
+
+lint: lint/flake8 lint/black## check style
 
 docs: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/atc_del_simulator.rst
