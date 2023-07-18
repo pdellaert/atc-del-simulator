@@ -2,7 +2,6 @@
 import rich_click as click
 from rich.console import Console
 from rich.table import Table
-from rich.rule import Rule
 from rich.prompt import Prompt
 from atc_del_simulator import AdsConfig, get_flight_plans
 
@@ -80,7 +79,7 @@ def route(ads_config: AdsConfig, origin_icao, details, number, traffic_type):
             ":white_check_mark:" if ads_config.get_property(property_name="verbose") else ":x:",
         )
         table.add_row("Details", ":white_check_mark:" if details else ":x:")
-        table.add_row("Number", "{}".format(number))
+        table.add_row("Number", f"{number}")
         table.add_row("Origin ICAO", origin_icao)
         table.add_row("Type", traffic_type)
         console.print(table)
@@ -119,13 +118,13 @@ def route(ads_config: AdsConfig, origin_icao, details, number, traffic_type):
             "Alternate",
             "",
         )
-        field_table.add_row("Cruise Alt", "N/A", "Scratchpad", "", "Squawk", str(flight_plan["squawk"]))
+        field_table.add_row("Cruise Alt", "N/A", "Scratchpad", "", "Squawk", f'{flight_plan["squawk"]:04d}')
         route_table = Table(padding=(0, 0), show_edge=False, show_lines=False, show_header=False)
         route_table.add_column(justify="right", width=15)
         route_table.add_column(justify="left", width=75)
         route_table.add_row("Route", flight_plan["route"])
         top_table = Table(
-            title="Flight Plan - {}".format(flight_plan["ident"]),
+            title=f'Flight Plan - {flight_plan["ident"]}',
             show_header=False,
             title_justify="left",
         )
@@ -145,11 +144,7 @@ def route(ads_config: AdsConfig, origin_icao, details, number, traffic_type):
                 flight_plan["operator_details"]["callsign"] if "callsign" in flight_plan["operator_details"] else ""
             )
             aircraft_details = (
-                "{} {} - {}".format(
-                    flight_plan["aircraft_details"]["manufacturer"],
-                    flight_plan["aircraft_details"]["type"],
-                    flight_plan["aircraft_details"]["description"],
-                )
+                f'{flight_plan["aircraft_details"]["manufacturer"]} {flight_plan["aircraft_details"]["type"]} - {flight_plan["aircraft_details"]["description"]}'
                 if "type" in flight_plan["aircraft_details"]
                 else ""
             )
@@ -162,7 +157,7 @@ def route(ads_config: AdsConfig, origin_icao, details, number, traffic_type):
                 "Dest. ICAO",
                 flight_plan["destination_icao"],
                 "Dest. Name",
-                flight_plan["destination_name"],
+                f'{flight_plan["destination_details"]["name"]} - {flight_plan["destination_details"]["city"]}',
             )
             data_table.add_row(
                 "Operator ICAO",

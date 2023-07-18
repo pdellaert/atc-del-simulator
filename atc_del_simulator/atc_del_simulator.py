@@ -27,7 +27,7 @@ def fetch_departures(ads_config: AdsConfig, icao, number, traffic_type):
         }
         if traffic_type != "ALL":
             params["type"] = traffic_type
-        dep_url = "{}/airports/{}/flights/departures".format(AEROAPI_BASE_URL, icao)
+        dep_url = f"{AEROAPI_BASE_URL}/airports/{icao}/flights/departures"
         try:
             # TODO Logging
             dep_response = aeroapi_session.get(url=dep_url, params=params)
@@ -46,7 +46,7 @@ def fetch_operator(ads_config: AdsConfig, icao):
     """Fetches the details of an operator based on its ICAO code"""
     aeroapi_session: requests.Session = ads_config.get_property("aeroapi_session")
     if aeroapi_session and aeroapi_session.headers.get("x-apikey") and icao:
-        op_url = "{}/operators/{}".format(AEROAPI_BASE_URL, icao.strip())
+        op_url = f"{AEROAPI_BASE_URL}/operators/{icao}"
         try:
             # TODO Logging
             op_response = aeroapi_session.get(url=op_url)
@@ -62,7 +62,7 @@ def fetch_aircraft(ads_config: AdsConfig, aircraft_type):
     """Fetches the details of an aircraft type"""
     aeroapi_session: requests.Session = ads_config.get_property("aeroapi_session")
     if aeroapi_session and aeroapi_session.headers.get("x-apikey") and aircraft_type:
-        at_url = "{}/aircraft/types/{}".format(AEROAPI_BASE_URL, aircraft_type.strip())
+        at_url = f"{AEROAPI_BASE_URL}/aircraft/types/{aircraft_type}"
         try:
             # TODO Logging
             at_response = aeroapi_session.get(url=at_url)
@@ -78,7 +78,7 @@ def fetch_raw_metar(ads_config: AdsConfig, icao):
     """Fetches the current METAR of an airport based on its ICAO code"""
     avwx_session: requests.Session = ads_config.get_property("avwx_session")
     if avwx_session and avwx_session.headers.get("Authorization") and icao:
-        metar_url = "{}/metar/{}".format(AVWX_BASE_URL, icao.strip())
+        metar_url = f"{AVWX_BASE_URL}/metar/{icao}"
         try:
             # TODO Logging
             metar_response = avwx_session.get(url=metar_url)
@@ -109,14 +109,14 @@ def get_flight_plans(ads_config: AdsConfig, origin, number, traffic_type, detail
                 and departure["operator_icao"]
                 and not departure["operator_icao"] in operator_cache
             ):
-                operator = fetch_operator(ads_config=ads_config, icao=departure["operator_icao"])
+                operator = fetch_operator(ads_config=ads_config, icao=departure["operator_icao"].strip())
                 operator_cache[departure["operator_icao"]] = operator
             if (
                 "aircraft_type" in departure
                 and departure["aircraft_type"]
                 and not departure["aircraft_type"] in aircraft_cache
             ):
-                aircraft = fetch_aircraft(ads_config=ads_config, aircraft_type=departure["aircraft_type"])
+                aircraft = fetch_aircraft(ads_config=ads_config, aircraft_type=departure["aircraft_type"].strip())
                 aircraft_cache[departure["aircraft_type"].strip()] = aircraft
         ident = departure["ident"].strip() if "ident" in departure and departure["ident"] else ""
         aircraft_type = (
@@ -132,11 +132,7 @@ def get_flight_plans(ads_config: AdsConfig, origin, number, traffic_type, detail
             if "origin" in departure and "code_icao" in departure["origin"] and departure["origin"]["code_icao"]
             else ""
         )
-        origin_name = (
-            departure["origin"]["name"].strip()
-            if "origin" in departure and "name" in departure["origin"] and departure["origin"]["name"]
-            else ""
-        )
+        origin_details = departure["origin"] if "origin" in departure else ""
         origin_raw_metar = origin_metar
         destination_icao = (
             departure["destination"]["code_icao"].strip()
@@ -145,11 +141,7 @@ def get_flight_plans(ads_config: AdsConfig, origin, number, traffic_type, detail
             and departure["destination"]["code_icao"]
             else ""
         )
-        destination_name = (
-            departure["destination"]["name"].strip()
-            if "destination" in departure and "name" in departure["destination"] and departure["destination"]["name"]
-            else ""
-        )
+        destination_details = departure["destination"] if "destination" in departure else ""
         operator_icao = (
             departure["operator_icao"].strip() if "operator_icao" in departure and departure["operator_icao"] else ""
         )
@@ -159,16 +151,16 @@ def get_flight_plans(ads_config: AdsConfig, origin, number, traffic_type, detail
             else ""
         )
         route = departure["route"].strip() if "route" in departure and departure["route"] else ""
-        squawk = random.randint(1000, 6999)
+        squawk = random.randint(100, 6999)
         flight_plan = {
             "ident": ident,
             "aircraft_type": aircraft_type,
             "aircraft_details": aircraft_details,
             "origin_icao": origin_icao,
-            "origin_name": origin_name,
+            "origin_details": origin_details,
             "origin_raw_metar": origin_raw_metar,
             "destination_icao": destination_icao,
-            "destination_name": destination_name,
+            "destination_details": destination_details,
             "operator_icao": operator_icao,
             "operator_details": operator_details,
             "route": route,

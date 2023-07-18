@@ -26,7 +26,7 @@ class AdsConfig(object):
         if property_name in self.conf.keys():
             self.conf[property_name] = property_value
             return self.conf.get(property_name)
-        raise KeyError("{} is not a valid configuration property".format(property_name))
+        raise KeyError(f"{property_name} is not a valid configuration property")
 
     def set_api_token(self, session_name, api_token):
         """Set the API token for different sessions"""
