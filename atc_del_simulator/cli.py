@@ -3,6 +3,7 @@ import rich_click as click
 from rich.console import Console
 from rich.table import Table
 from rich.rule import Rule
+from rich.prompt import Prompt
 from atc_del_simulator import AdsConfig, get_flight_plans
 
 pass_ads_config = click.make_pass_decorator(AdsConfig, ensure=True)
@@ -93,6 +94,7 @@ def route(ads_config: AdsConfig, origin_icao, details, number, traffic_type):
             details=details,
         )
     for flight_plan in flight_plans:
+        console.clear()
         flight_rules = "IFR" if flight_plan["route"] else "VFR"
         field_table = Table(padding=(0, 0), show_edge=False, show_lines=False, show_header=False)
         field_table.add_column(justify="right", width=15)
@@ -130,8 +132,15 @@ def route(ads_config: AdsConfig, origin_icao, details, number, traffic_type):
         top_table.add_column(justify="left")
         top_table.add_row(field_table)
         top_table.add_row(route_table)
+        console.print(top_table)
+        command = Prompt.ask(
+            "Select an action",
+            choices=["details", "next"] if details else ["next"],
+            default="details" if details else "next",
+        )
+        console.clear()
 
-        if details:
+        if details and command == "details":
             operator_callsign = (
                 flight_plan["operator_details"]["callsign"] if "callsign" in flight_plan["operator_details"] else ""
             )
@@ -174,6 +183,5 @@ def route(ads_config: AdsConfig, origin_icao, details, number, traffic_type):
             top_table.add_section()
             top_table.add_row(data_table)
             top_table.add_row(metar_table)
-
-        console.print(top_table)
-        console.print(Rule())
+            console.print(top_table)
+            Prompt.ask("Select an action", choices=["next"], default="next")
