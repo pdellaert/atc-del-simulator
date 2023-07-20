@@ -7,4 +7,4 @@ __version__ = "0.1.0"
 __all__ = ["AdsConfig", "get_flight_plans"]
 
 from atc_del_simulator.ads_config import AdsConfig
-from atc_del_simulator.atc_del_simulator import get_flight_plans
+from atc_del_simulator.atc_del_simulator import get_flight_plans, fetch_aircraft, fetch_operator

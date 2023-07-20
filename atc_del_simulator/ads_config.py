@@ -1,16 +1,20 @@
 import requests
 from rich.console import Console
+from tinydb import TinyDB
 
 
 class AdsConfig(object):
     """Class representing the ADS Config with relevant data to be shared across methods"""
 
-    def __init__(self, aeroapi_token="", avwx_token="", verbose=False):
+    def __init__(self, aeroapi_token="", avwx_token="", database="", verbose=False):
         self.conf = {
             "aeroapi_session": requests.Session(),
             "aeroapi_token": aeroapi_token,
             "avwx_session": requests.Session(),
             "avwx_token": avwx_token,
+            "database": database,
+            "db_connection": None,
+            "use_cache": False,
             "rich_console": Console(),
             "verbose": verbose,
         }
@@ -23,7 +27,7 @@ class AdsConfig(object):
 
     def set_property(self, property_name, property_value):
         """Set a property of the config"""
-        if property_name in self.conf.keys():
+        if property_name in self.conf:
             self.conf[property_name] = property_value
             return self.conf.get(property_name)
         raise KeyError(f"{property_name} is not a valid configuration property")
@@ -40,3 +44,7 @@ class AdsConfig(object):
             self.conf["avwx_session"].headers.update(
                 {"Accept": "application/json; charset=UTF-8", "Authorization": api_token}
             )
+
+    def start_db(self):
+        """Start the SQLite DB"""
+        self.set_property("db_connection", TinyDB(self.get_property("database")))

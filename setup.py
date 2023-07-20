@@ -15,7 +15,8 @@ requirements = [
     'rich>=13.0',
     'rich-click>=1.6',
     'requests>=2.31',
-    'loguru>=0.7'
+    'loguru>=0.7',
+    'tinydb>=4.8'
 ]
 
 test_requirements = [ ]
