@@ -141,7 +141,9 @@ def route(ads_config: AdsConfig, origin_icao, cache, details, number, vfr_number
             )
             flight_plans.extend(vfr_flight_plans)
         random.shuffle(flight_plans)
+    count = 0
     for flight_plan in flight_plans:
+        count += 1
         console.clear()
         flight_rules = "IFR" if flight_plan["route"] and not "VFR" in flight_plan["route"] else "VFR"
         field_table = Table(padding=(0, 0), show_edge=False, show_lines=False, show_header=False)
@@ -173,7 +175,7 @@ def route(ads_config: AdsConfig, origin_icao, cache, details, number, vfr_number
         route_table.add_column(justify="left", width=75)
         route_table.add_row("Route", flight_plan["route"])
         top_table = Table(
-            title=f'Flight Plan - {flight_plan["ident"]}',
+            title=f'Flight Plan - {flight_plan["ident"]} - {count}/{number}',
             show_header=False,
             title_justify="left",
         )
