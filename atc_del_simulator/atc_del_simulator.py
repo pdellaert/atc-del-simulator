@@ -1,5 +1,6 @@
 """Main module."""
 import random
+import string
 import math
 from datetime import datetime, timezone, timedelta
 import requests
@@ -11,9 +12,43 @@ from atc_del_simulator import AdsConfig
 AEROAPI_BASE_URL = "https://aeroapi.flightaware.com/aeroapi"
 AEROAPI_STD_SET_SIZE = 15
 AVWX_BASE_URL = "https://avwx.rest/api"
+VFR_AIRCRAFT_TYPES = [
+    "BE33",
+    "BE35",
+    "BE50",
+    "BE55",
+    "BE56",
+    "BE58",
+    "B58T",
+    "C152",
+    "C172",
+    "C182",
+    "C206",
+    "SR20",
+    "SR22",
+    "DV20",
+    "DA40",
+    "DA42",
+    "DA46",
+    "M20P",
+    "M20T",
+    "P28A",
+    "P28R",
+]
+VFR_ROUTES = [
+    "NORTH",
+    "NORTHEAST",
+    "EAST",
+    "SOUTHEAST",
+    "SOUTH",
+    "SOUTHWEST",
+    "WEST",
+    "NORTHWEST",
+    "SFO",
+]
 
 
-def fetch_departures(ads_config: AdsConfig, icao, number, traffic_type, waypoint):
+def fetch_departures(ads_config: AdsConfig, icao, number, waypoint):
     """Fetches the departures for a given ICAO for a random 4h time period and specified number of results and type"""
     if ads_config.get_property("use_cache"):
         database: TinyDB = ads_config.get_property("db_connection")
@@ -36,8 +71,6 @@ def fetch_departures(ads_config: AdsConfig, icao, number, traffic_type, waypoint
                 "start": random_start_time.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "end": random_stop_time.strftime("%Y-%m-%dT%H:%M:%SZ"),
             }
-            if traffic_type != "ALL":
-                params["type"] = traffic_type
             dep_url = f"{AEROAPI_BASE_URL}/airports/{icao}/flights/departures"
             try:
                 # TODO Logging
@@ -56,11 +89,23 @@ def fetch_departures(ads_config: AdsConfig, icao, number, traffic_type, waypoint
 def fetch_operator(ads_config: AdsConfig, icao):
     """Fetches the details of an operator based on its ICAO code"""
     aeroapi_session: requests.Session = ads_config.get_property("aeroapi_session")
+    if ads_config.get_property("use_cache"):
+        database: TinyDB = ads_config.get_property("db_connection")
+        operator_table = database.table("operators")
+        matching_operators = operator_table.search(where("icao") == icao)
+        if len(matching_operators) >= 1:
+            return matching_operators[0]
     if aeroapi_session and aeroapi_session.headers.get("x-apikey") and icao:
         op_url = f"{AEROAPI_BASE_URL}/operators/{icao}"
         try:
             # TODO Logging
             op_response = aeroapi_session.get(url=op_url)
+            if ads_config.get_property("database"):
+                database: TinyDB = ads_config.get_property("db_connection")
+                operator_table = database.table("operators")
+                matching_operators = operator_table.search(where("icao") == icao)
+                if len(matching_operators) == 0 and not "status" in op_response.json():
+                    operator_table.insert(op_response.json())
             return op_response.json()
         except HTTPError as http_err:
             # TODO replace by logging
@@ -72,11 +117,25 @@ def fetch_operator(ads_config: AdsConfig, icao):
 def fetch_aircraft(ads_config: AdsConfig, aircraft_type):
     """Fetches the details of an aircraft type"""
     aeroapi_session: requests.Session = ads_config.get_property("aeroapi_session")
+    if ads_config.get_property("use_cache"):
+        database: TinyDB = ads_config.get_property("db_connection")
+        aircraft_type_table = database.table("aircraft_types")
+        matching_aircraft_types = aircraft_type_table.search(where("type") == aircraft_type)
+        if len(matching_aircraft_types) >= 1:
+            return matching_aircraft_types[0]
     if aeroapi_session and aeroapi_session.headers.get("x-apikey") and aircraft_type:
         at_url = f"{AEROAPI_BASE_URL}/aircraft/types/{aircraft_type}"
         try:
             # TODO Logging
             at_response = aeroapi_session.get(url=at_url)
+            if ads_config.get_property("database"):
+                database: TinyDB = ads_config.get_property("db_connection")
+                aircraft_type_table = database.table("aircraft_types")
+                matching_aircraft_types = aircraft_type_table.search(where("type") == aircraft_type)
+                if len(matching_aircraft_types) == 0 and not "status" in at_response.json():
+                    aircraft_type_details = at_response.json()
+                    aircraft_type_details["type"] = aircraft_type
+                    aircraft_type_table.insert(aircraft_type_details)
             return at_response.json()
         except HTTPError as http_err:
             # TODO replace by logging
@@ -102,17 +161,39 @@ def fetch_raw_metar(ads_config: AdsConfig, icao):
     return ""
 
 
-def get_flight_plans(ads_config: AdsConfig, origin, number, traffic_type, details, waypoint):
+def generate_vfr(ads_config: AdsConfig, origin, number, details):
+    """Returns a set of VFR requests"""
+    flight_plans = []
+    origin_metar = ""
+    if details and not ads_config.get_property("use_cache"):
+        origin_metar = fetch_raw_metar(ads_config=ads_config, icao=origin)
+    for _ in range(number):
+        flight_plan = {
+            "ident": f"N{random.randint(100,999)}{''.join(random.choices(string.ascii_uppercase + string.digits, k=2))}",
+            "aircraft_type": random.choice(VFR_AIRCRAFT_TYPES),
+            "aircraft_details": {},
+            "origin_icao": origin,
+            "origin_details": {},
+            "origin_raw_metar": origin_metar,
+            "destination_icao": "",
+            "destination_details": {},
+            "operator_icao": "",
+            "operator_details": {},
+            "route": f"VFR {random.choice(VFR_ROUTES)}",
+            "squawk": random.randint(100, 6999),
+        }
+        flight_plans.append(flight_plan)
+    return flight_plans
+
+
+def get_flight_plans(ads_config: AdsConfig, origin, number, details, waypoint):
     """Returns a set of flight plans for the user to look at with extra details if requested"""
     flight_plans = []
     origin_metar = ""
     if details and not ads_config.get_property("use_cache"):
         origin_metar = fetch_raw_metar(ads_config=ads_config, icao=origin)
 
-    departures = fetch_departures(
-        ads_config=ads_config, icao=origin, number=number, traffic_type=traffic_type, waypoint=waypoint
-    )
-
+    departures = fetch_departures(ads_config=ads_config, icao=origin, number=number, waypoint=waypoint)
     for departure in departures:
         if len(flight_plans) >= number:
             break

@@ -1,10 +1,12 @@
 """Console script for atc_del_simulator."""
+import sys
+import random
 import rich_click as click
 from rich.console import Console
 from rich.table import Table
 from rich.prompt import Prompt
-from tinydb import TinyDB, where
-from atc_del_simulator import AdsConfig, get_flight_plans, fetch_aircraft, fetch_operator
+from tinydb import TinyDB, where, Query
+from atc_del_simulator import AdsConfig, get_flight_plans, fetch_aircraft, fetch_operator, generate_vfr
 
 pass_ads_config = click.make_pass_decorator(AdsConfig, ensure=True)
 
@@ -56,7 +58,11 @@ def cli(ads_config: AdsConfig, aeroapi_token, avwx_token, database, verbose):
     "--cache/--no-cache",
     default=False,
     show_default=True,
-    help="Use cache for reading data, must also use `--db` flag on main command to determine the database. When no-cache is used, information will be pulled from the API and if `--db` is enabled, it will be written to the SQLite DB.",
+    help=(
+        "Use cache for reading data, must also use `--db` flag on main command to determine the database. When no-cache"
+        " is used, information will be pulled from the API and if `--db` is enabled, it will be written to the"
+        " SQLite DB."
+    ),
 )
 @click.option(
     "-d/-D",
@@ -73,13 +79,7 @@ def cli(ads_config: AdsConfig, aeroapi_token, avwx_token, database, verbose):
     help="Number of flight plans to show.",
 )
 @click.option(
-    "-t",
-    "--type",
-    "traffic_type",
-    type=click.Choice(["ALL", "AIRLINE", "GA"], case_sensitive=False),
-    default="ALL",
-    show_default=True,
-    help="Select which type of flight plans you would like to see.",
+    "-v", "--vfr-number", default=0, show_default=True, help="Include a number of VFR routes in the training."
 )
 @click.option(
     "-w",
@@ -88,12 +88,19 @@ def cli(ads_config: AdsConfig, aeroapi_token, avwx_token, database, verbose):
     help="Provide a waypoint that must be part of the route. Only works when `--cache` is enabled.",
 )
 @pass_ads_config
-def route(ads_config: AdsConfig, origin_icao, cache, details, number, traffic_type, waypoint):
+def route(ads_config: AdsConfig, origin_icao, cache, details, number, vfr_number, waypoint):
     """Fetch and display routes for departures from the provided ICAO"""
     ads_config.set_property("use_cache", cache)
+    ads_config.set_property("details", details)
     console: Console = ads_config.get_property("rich_console")
-    operator_cache = {}
-    aircraft_cache = {}
+    validation_errors = ads_config.validate()
+    if len(validation_errors) > 0:
+        console.stderr = True
+        console.print("Validation errors:", style="bold red")
+        for error in validation_errors:
+            console.print(error, style="bold red")
+        sys.exit(10)
+    vfr_number = vfr_number if vfr_number < number else number
     if ads_config.get_property(property_name="verbose"):
         table = Table(title="Invoked options")
         table.add_column("Option", justify="left")
@@ -112,23 +119,31 @@ def route(ads_config: AdsConfig, origin_icao, cache, details, number, traffic_ty
         table.add_row("Details", ":white_check_mark:" if details else ":x:")
         table.add_row("Number", f"{number}")
         table.add_row("Origin ICAO", origin_icao)
-        table.add_row("Type", traffic_type)
         table.add_row("Waypoint", waypoint)
         console.print(table)
         Prompt.ask("Continue?")
     console.clear()
+
     with console.status("Loading flight plans..."):
-        flight_plans = get_flight_plans(
-            ads_config=ads_config,
-            origin=origin_icao,
-            number=number,
-            traffic_type=traffic_type,
-            details=details,
-            waypoint=waypoint,
-        )
+        flight_plans = []
+        if number > 0:
+            ifr_flight_plans = get_flight_plans(
+                ads_config=ads_config,
+                origin=origin_icao,
+                number=number - vfr_number,
+                details=details,
+                waypoint=waypoint,
+            )
+            flight_plans.extend(ifr_flight_plans)
+        if vfr_number > 0:
+            vfr_flight_plans = generate_vfr(
+                ads_config=ads_config, origin=origin_icao, number=vfr_number, details=details
+            )
+            flight_plans.extend(vfr_flight_plans)
+        random.shuffle(flight_plans)
     for flight_plan in flight_plans:
         console.clear()
-        flight_rules = "IFR" if flight_plan["route"] else "VFR"
+        flight_rules = "IFR" if flight_plan["route"] and not "VFR" in flight_plan["route"] else "VFR"
         field_table = Table(padding=(0, 0), show_edge=False, show_lines=False, show_header=False)
         field_table.add_column(justify="right", width=15)
         field_table.add_column(justify="left", width=15)
@@ -174,28 +189,25 @@ def route(ads_config: AdsConfig, origin_icao, cache, details, number, traffic_ty
 
         if details and command == "d":
             with console.status("Loading operator and aircraft details..."):
-                if flight_plan["operator_icao"].strip() and not flight_plan["operator_icao"].strip() in operator_cache:
-                    flight_plan["operator_details"] = fetch_operator(
-                        ads_config=ads_config, icao=flight_plan["operator_icao"].strip()
-                    )
-                    operator_cache[flight_plan["operator_icao"].strip()] = flight_plan["operator_details"]
-                elif flight_plan["operator_icao"].strip():
-                    flight_plan["operator_details"] = operator_cache[flight_plan["operator_icao"]]
-
-                if flight_plan["aircraft_type"].strip() and not flight_plan["aircraft_type"].strip() in aircraft_cache:
-                    flight_plan["aircraft_details"] = fetch_aircraft(
-                        ads_config=ads_config, aircraft_type=flight_plan["aircraft_type"].strip()
-                    )
-                    aircraft_cache[flight_plan["aircraft_type"].strip()] = flight_plan["aircraft_details"]
-                elif flight_plan["aircraft_type"].strip():
-                    flight_plan["aircraft_details"] = aircraft_cache[flight_plan["aircraft_type"].strip()]
+                flight_plan["operator_details"] = fetch_operator(
+                    ads_config=ads_config, icao=flight_plan["operator_icao"].strip()
+                )
+                flight_plan["aircraft_details"] = fetch_aircraft(
+                    ads_config=ads_config, aircraft_type=flight_plan["aircraft_type"].strip()
+                )
 
             operator_callsign = (
                 flight_plan["operator_details"]["callsign"] if "callsign" in flight_plan["operator_details"] else ""
             )
             aircraft_details = (
-                f'{flight_plan["aircraft_details"]["manufacturer"]} {flight_plan["aircraft_details"]["type"]} - {flight_plan["aircraft_details"]["description"]}'
+                f'{flight_plan["aircraft_details"]["manufacturer"]} {flight_plan["aircraft_details"]["type"]} -'
+                f' {flight_plan["aircraft_details"]["description"]}'
                 if "type" in flight_plan["aircraft_details"]
+                else ""
+            )
+            destination_name = (
+                f'{flight_plan["destination_details"]["name"]} - {flight_plan["destination_details"]["city"]}'
+                if "name" in flight_plan["destination_details"]
                 else ""
             )
             data_table = Table(padding=(0, 0), show_edge=False, show_lines=False, show_header=False)
@@ -207,7 +219,7 @@ def route(ads_config: AdsConfig, origin_icao, cache, details, number, traffic_ty
                 "Dest. ICAO",
                 flight_plan["destination_icao"],
                 "Dest. Name",
-                f'{flight_plan["destination_details"]["name"]} - {flight_plan["destination_details"]["city"]}',
+                destination_name,
             )
             data_table.add_row(
                 "Operator ICAO",
@@ -247,10 +259,41 @@ def stats(ads_config: AdsConfig, search_term):
             | (where("destination")["code_icao"].matches(f".*{search_term}.*"))
             | (where("route").matches(f".*{search_term}.*"))
         )
+        operator_table = database.table("operators")
+        matching_operators = operator_table.search(where("icao").matches(f".*{search_term}.*"))
+        aircraft_type_table = database.table("aircraft_types")
+        matching_aircraft_types = aircraft_type_table.search(where("type").matches(f".*{search_term}.*"))
         table = Table(title="Database stats")
         table.add_column("Table", justify="left")
         table.add_column("# Records", justify="right")
         table.add_row("departures", f"{len(matching_departures)}")
+        table.add_row("operators", f"{len(matching_operators)}")
+        table.add_row("aircraft_types", f"{len(matching_aircraft_types)}")
         console.print(table)
     else:
+        console.stderr = True
         console.print("No database provided!")
+        sys.exit(20)
+
+
+@cli.command()
+@pass_ads_config
+def clean(ads_config: AdsConfig):
+    """Cleans up the database of invalid items"""
+    console: Console = ads_config.get_property("rich_console")
+    if ads_config.get_property("database"):
+        database: TinyDB = ads_config.get_property("db_connection")
+        operator_table = database.table("operators")
+        matching_operators = operator_table.remove(Query()["status"].exists())
+        aircraft_type_table = database.table("aircraft_types")
+        matching_aircraft_types = aircraft_type_table.remove(Query()["status"].exists())
+        table = Table(title="Database clean up")
+        table.add_column("Table", justify="left")
+        table.add_column("# Removed items", justify="right")
+        table.add_row("operators", f"{len(matching_operators)}")
+        table.add_row("aircraft_types", f"{len(matching_aircraft_types)}")
+        console.print(table)
+    else:
+        console.stderr = True
+        console.print("No database provided!")
+        sys.exit(20)

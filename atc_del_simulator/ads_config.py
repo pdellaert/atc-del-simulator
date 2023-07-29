@@ -14,6 +14,7 @@ class AdsConfig(object):
             "avwx_token": avwx_token,
             "database": database,
             "db_connection": None,
+            "details": False,
             "use_cache": False,
             "rich_console": Console(),
             "verbose": verbose,
@@ -48,3 +49,13 @@ class AdsConfig(object):
     def start_db(self):
         """Start the SQLite DB"""
         self.set_property("db_connection", TinyDB(self.get_property("database")))
+
+    def validate(self):
+        errors = []
+        if self.get_property("use_cache") and not self.get_property("database"):
+            errors.append("Cache enabled but no database provided.")
+        if not self.get_property("use_cache") and not self.get_property("aeroapi_token"):
+            errors.append("Cache disabled, but no AeroAPI token set")
+        if not self.get_property("use_cache") and self.get_property("details") and not self.get_property("avwx_token"):
+            errors.append("Cache disabled and details are enabled, but no AVWX token set")
+        return errors
