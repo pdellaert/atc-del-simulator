@@ -1,0 +1,1163 @@
+{
+  "airport": {
+    "city": "Oakland",
+    "country": "US",
+    "iata": "OAK",
+    "icao": "KOAK",
+    "name": "Oakland International Airport",
+    "state": "CA"
+  },
+  "departure_frequencies": {
+    "GROVE": "125.350",
+    "RICHMOND": "120.900",
+    "SUTRO": "135.100"
+  },
+  "frequencies": {
+    "KOAK_ATIS": "133.775",
+    "OAK_DEL": "121.100",
+    "OAK_GND": "121.750",
+    "OAK_TWR": "127.200"
+  },
+  "ifr_departures": {
+    "OAKE": [
+      {
+        "aircraft_types": [
+          "J",
+          "DH8D"
+        ],
+        "cvs": false,
+        "departure_frequency": "RICHMOND",
+        "heading": "",
+        "runways": [],
+        "sid": "QUAKE2",
+        "top_altitude": "5000",
+        "waypoints": [
+          "SGD",
+          "ENI",
+          "RBL",
+          "GRTFL",
+          "DEDHD",
+          "ORRCA",
+          "SAC",
+          "MOGEE",
+          "TIPRE",
+          "SYRAH",
+          "LIN",
+          "CCR",
+          "PYE",
+          "CIC"
+        ]
+      },
+      {
+        "aircraft_types": [
+          "J",
+          "DH8D"
+        ],
+        "cvs": false,
+        "departure_frequency": "SUTRO",
+        "heading": "",
+        "runways": [],
+        "sid": "QUAKE2",
+        "top_altitude": "5000",
+        "waypoints": [
+          "OSI",
+          "NTELL",
+          "KAYEX",
+          "SUSEY",
+          "KTINA",
+          "LIBBO",
+          "FFOIL",
+          "ALCOA",
+          "BEBOP",
+          "CINNY",
+          "ALANN",
+          "ALLBE",
+          "BAART"
+        ]
+      },
+      {
+        "aircraft_types": [
+          "P",
+          "T"
+        ],
+        "cvs": false,
+        "departure_frequency": "GROVE",
+        "heading": "090",
+        "runways": [],
+        "sid": "",
+        "top_altitude": "3000",
+        "waypoints": []
+      },
+      {
+        "aircraft_types": [
+          "J",
+          "DH8D"
+        ],
+        "cvs": false,
+        "departure_frequency": "RICHMOND",
+        "heading": "270",
+        "runways": [
+          "10L",
+          "10R",
+          "12"
+        ],
+        "sid": "",
+        "top_altitude": "5000",
+        "waypoints": [
+          "SGD",
+          "ENI",
+          "RBL",
+          "GRTFL",
+          "DEDHD",
+          "ORRCA",
+          "SAC",
+          "MOGEE",
+          "TIPRE",
+          "SYRAH",
+          "LIN",
+          "CCR",
+          "PYE",
+          "CIC"
+        ]
+      },
+      {
+        "aircraft_types": [
+          "J",
+          "DH8D"
+        ],
+        "cvs": false,
+        "departure_frequency": "SUTRO",
+        "heading": "270",
+        "runways": [
+          "10L",
+          "10R",
+          "12"
+        ],
+        "sid": "",
+        "top_altitude": "3000",
+        "waypoints": [
+          "ALCOA",
+          "BEBOP",
+          "CINNY",
+          "SEGUL",
+          "CYPRS",
+          "PXN",
+          "NTELL",
+          "EBAYE",
+          "CISKO",
+          "LOSHN",
+          "AVE",
+          "FLW"
+        ]
+      }
+    ],
+    "SFOE": [
+      {
+        "aircraft_types": [
+          "J",
+          "DH8D"
+        ],
+        "cvs": false,
+        "departure_frequency": "RICHMOND",
+        "heading": "",
+        "runways": [],
+        "sid": "OAK5",
+        "top_altitude": "3000",
+        "waypoints": [
+          "SGD",
+          "ENI",
+          "RBL",
+          "GRTFL",
+          "DEDHD",
+          "ORRCA",
+          "SAC",
+          "MOGEE",
+          "TIPRE",
+          "SYRAH",
+          "LIN",
+          "CCR",
+          "PYE",
+          "CIC"
+        ]
+      },
+      {
+        "aircraft_types": [
+          "J",
+          "DH8D"
+        ],
+        "cvs": false,
+        "departure_frequency": "SUTRO",
+        "heading": "",
+        "runways": [],
+        "sid": "OAK5",
+        "top_altitude": "3000",
+        "waypoints": [
+          "ALCOA",
+          "BEBOP",
+          "CINNY",
+          "SEGUL",
+          "CYPRS",
+          "PXN",
+          "NTELL",
+          "EBAYE",
+          "CISKO",
+          "LOSHN",
+          "AVE",
+          "FLW"
+        ]
+      },
+      {
+        "aircraft_types": [
+          "J",
+          "DH8D"
+        ],
+        "cvs": true,
+        "departure_frequency": "SUTRO",
+        "heading": "",
+        "runways": [],
+        "sid": "KATFH3",
+        "top_altitude": "3000",
+        "waypoints": []
+      },
+      {
+        "aircraft_types": [
+          "J",
+          "DH8D"
+        ],
+        "cvs": true,
+        "departure_frequency": "SUTRO",
+        "heading": "",
+        "runways": [],
+        "sid": "SKYL1",
+        "top_altitude": "3000",
+        "waypoints": []
+      },
+      {
+        "aircraft_types": [
+          "P",
+          "T"
+        ],
+        "cvs": false,
+        "departure_frequency": "RICHMOND",
+        "heading": "090",
+        "runways": [],
+        "sid": "",
+        "top_altitude": "3000",
+        "waypoints": []
+      },
+      {
+        "aircraft_types": [
+          "J",
+          "DH8D"
+        ],
+        "cvs": false,
+        "departure_frequency": "RICHMOND",
+        "heading": "RWY",
+        "runways": [
+          "10L",
+          "10R",
+          "12"
+        ],
+        "sid": "",
+        "top_altitude": "3000",
+        "waypoints": [
+          "SGD",
+          "ENI",
+          "RBL",
+          "GRTFL",
+          "DEDHD",
+          "ORRCA",
+          "SAC",
+          "MOGEE",
+          "TIPRE",
+          "SYRAH",
+          "LIN",
+          "CCR",
+          "PYE",
+          "CIC"
+        ]
+      },
+      {
+        "aircraft_types": [
+          "J",
+          "DH8D"
+        ],
+        "cvs": false,
+        "departure_frequency": "SUTRO",
+        "heading": "RWY",
+        "runways": [
+          "10L",
+          "10R",
+          "12"
+        ],
+        "sid": "",
+        "top_altitude": "3000",
+        "waypoints": [
+          "ALCOA",
+          "BEBOP",
+          "CINNY",
+          "SEGUL",
+          "CYPRS",
+          "PXN",
+          "NTELL",
+          "EBAYE",
+          "CISKO",
+          "LOSHN",
+          "AVE",
+          "FLW"
+        ]
+      }
+    ],
+    "SFOW": [
+      {
+        "aircraft_types": [
+          "J"
+        ],
+        "cvs": true,
+        "departure_frequency": "RICHMOND",
+        "heading": "",
+        "runways": [],
+        "sid": "OAK5",
+        "top_altitude": "FL190",
+        "waypoints": [
+          "SGD",
+          "ENI",
+          "RBL",
+          "GRTFL",
+          "DEDHD",
+          "ORRCA",
+          "SAC",
+          "MOGEE",
+          "TIPRE",
+          "SYRAH",
+          "LIN",
+          "CCR",
+          "PYE",
+          "CIC"
+        ]
+      },
+      {
+        "aircraft_types": [
+          "DH8D"
+        ],
+        "cvs": true,
+        "departure_frequency": "RICHMOND",
+        "heading": "",
+        "runways": [],
+        "sid": "OAK5",
+        "top_altitude": "10000",
+        "waypoints": [
+          "SGD",
+          "ENI",
+          "RBL",
+          "GRTFL",
+          "DEDHD",
+          "ORRCA",
+          "SAC",
+          "MOGEE",
+          "TIPRE",
+          "SYRAH",
+          "LIN",
+          "CCR",
+          "PYE",
+          "CIC"
+        ]
+      },
+      {
+        "aircraft_types": [
+          "J",
+          "DH8D"
+        ],
+        "cvs": true,
+        "departure_frequency": "SUTRO",
+        "heading": "",
+        "runways": [],
+        "sid": "OAK5",
+        "top_altitude": "10000",
+        "waypoints": [
+          "ALCOA",
+          "BEBOP",
+          "CINNY",
+          "SEGUL",
+          "CYPRS",
+          "PXN",
+          "NTELL",
+          "EBAYE",
+          "CISKO",
+          "LOSHN",
+          "AVE",
+          "FLW"
+        ]
+      },
+      {
+        "aircraft_types": [
+          "J",
+          "DH8D"
+        ],
+        "cvs": true,
+        "departure_frequency": "SUTRO",
+        "heading": "",
+        "runways": [],
+        "sid": "CNDEL5",
+        "top_altitude": "SID",
+        "waypoints": []
+      },
+      {
+        "aircraft_types": [
+          "J",
+          "DH8D"
+        ],
+        "cvs": true,
+        "departure_frequency": "SUTRO",
+        "heading": "",
+        "runways": [],
+        "sid": "SKYL1",
+        "top_altitude": "10000",
+        "waypoints": []
+      },
+      {
+        "aircraft_types": [
+          "J",
+          "DH8D"
+        ],
+        "cvs": true,
+        "departure_frequency": "SUTRO",
+        "heading": "",
+        "runways": [],
+        "sid": "COAST9",
+        "top_altitude": "10000",
+        "waypoints": []
+      },
+      {
+        "aircraft_types": [
+          "P",
+          "T",
+          "J",
+          "DH8D"
+        ],
+        "cvs": true,
+        "departure_frequency": "SUTRO",
+        "heading": "",
+        "runways": [],
+        "sid": "NUEVO8",
+        "top_altitude": "10000",
+        "waypoints": []
+      },
+      {
+        "aircraft_types": [
+          "P",
+          "T"
+        ],
+        "cvs": false,
+        "departure_frequency": "RICHMOND",
+        "heading": "",
+        "runways": [],
+        "sid": "NIMI5",
+        "top_altitude": "3000",
+        "waypoints": []
+      },
+      {
+        "aircraft_types": [
+          "J",
+          "DH8D"
+        ],
+        "cvs": false,
+        "departure_frequency": "RICHMOND",
+        "heading": "270",
+        "runways": [
+          "33"
+        ],
+        "sid": "",
+        "top_altitude": "2000",
+        "waypoints": [
+          "SGD",
+          "ENI",
+          "RBL",
+          "GRTFL",
+          "DEDHD",
+          "ORRCA",
+          "SAC",
+          "MOGEE",
+          "TIPRE",
+          "SYRAH",
+          "LIN",
+          "CCR",
+          "PYE",
+          "CIC"
+        ]
+      },
+      {
+        "aircraft_types": [
+          "J",
+          "DH8D"
+        ],
+        "cvs": false,
+        "departure_frequency": "SUTRO",
+        "heading": "270",
+        "runways": [
+          "33"
+        ],
+        "sid": "",
+        "top_altitude": "2000",
+        "waypoints": [
+          "OSI",
+          "NTELL",
+          "KAYEX",
+          "SUSEY",
+          "KTINA",
+          "LIBBO",
+          "FFOIL",
+          "ALCOA",
+          "BEBOP",
+          "CINNY",
+          "ALANN",
+          "ALLBE",
+          "BAART"
+        ]
+      },
+      {
+        "aircraft_types": [
+          "P",
+          "T"
+        ],
+        "cvs": false,
+        "departure_frequency": "RICHMOND",
+        "heading": "315",
+        "runways": [
+          "33"
+        ],
+        "sid": "",
+        "top_altitude": "3000",
+        "waypoints": []
+      },
+      {
+        "aircraft_types": [
+          "P",
+          "T"
+        ],
+        "cvs": false,
+        "departure_frequency": "RICHMOND",
+        "heading": "315",
+        "runways": [
+          "28L",
+          "28R",
+          "30"
+        ],
+        "sid": "",
+        "top_altitude": "3000",
+        "waypoints": [
+          "SGD",
+          "ENI",
+          "RBL",
+          "GRTFL",
+          "DEDHD",
+          "ORRCA",
+          "SAC",
+          "MOGEE",
+          "TIPRE",
+          "SYRAH",
+          "LIN",
+          "CCR",
+          "PYE",
+          "CIC"
+        ]
+      },
+      {
+        "aircraft_types": [
+          "P",
+          "T"
+        ],
+        "cvs": false,
+        "departure_frequency": "SUTRO",
+        "heading": "RWY",
+        "runways": [
+          "28L",
+          "28R",
+          "30"
+        ],
+        "sid": "",
+        "top_altitude": "10000",
+        "waypoints": [
+          "OSI",
+          "NTELL",
+          "KAYEX",
+          "SUSEY",
+          "KTINA",
+          "LIBBO",
+          "FFOIL",
+          "ALCOA",
+          "BEBOP",
+          "CINNY",
+          "ALANN",
+          "ALLBE",
+          "BAART"
+        ]
+      },
+      {
+        "aircraft_types": [
+          "J",
+          "DH8D"
+        ],
+        "cvs": false,
+        "departure_frequency": "RICHMOND",
+        "heading": "RWY",
+        "runways": [
+          "28L",
+          "28R",
+          "30"
+        ],
+        "sid": "",
+        "top_altitude": "10000",
+        "waypoints": [
+          "SGD",
+          "ENI",
+          "RBL",
+          "GRTFL",
+          "DEDHD",
+          "ORRCA",
+          "SAC",
+          "MOGEE",
+          "TIPRE",
+          "SYRAH",
+          "LIN",
+          "CCR",
+          "PYE",
+          "CIC"
+        ]
+      },
+      {
+        "aircraft_types": [
+          "J",
+          "DH8D"
+        ],
+        "cvs": false,
+        "departure_frequency": "SUTRO",
+        "heading": "RWY",
+        "runways": [
+          "28L",
+          "28R",
+          "30"
+        ],
+        "sid": "",
+        "top_altitude": "10000",
+        "waypoints": [
+          "OSI",
+          "NTELL",
+          "KAYEX",
+          "SUSEY",
+          "KTINA",
+          "LIBBO",
+          "FFOIL",
+          "ALCOA",
+          "BEBOP",
+          "CINNY",
+          "ALANN",
+          "ALLBE",
+          "BAART"
+        ]
+      }
+    ]
+  },
+  "runway_configurations": {
+    "OAKE": {
+      "runways_in_use": [
+        "10L",
+        "10R",
+        "12"
+      ]
+    },
+    "SFOE": {
+      "runways_in_use": [
+        "10L",
+        "10R",
+        "12"
+      ]
+    },
+    "SFOW": {
+      "runways_in_use": [
+        "28L",
+        "28R",
+        "30"
+      ]
+    }
+  },
+  "sids": {
+    "CNDEL5": {
+      "name": "CNDEL5",
+      "rnav": true,
+      "runways": [
+        "28L",
+        "28R",
+        "30"
+      ],
+      "top_altitude": "10000",
+      "transitions": [
+        "NTELL",
+        "KAYEX",
+        "SUSEY",
+        "KTINA",
+        "YYUNG"
+      ],
+      "type": "PILOT",
+      "waypoints": [
+        "LEJAY",
+        "CNDEL",
+        "PORTE",
+        "UTOOB",
+        "NTELL",
+        "KAYEX",
+        "SUSEY",
+        "KTINA",
+        "FFOIL",
+        "LIBBO",
+        "YYUNG"
+      ]
+    },
+    "COAST9": {
+      "name": "COAST9",
+      "rnav": false,
+      "runways": [
+        "28L",
+        "28R",
+        "30"
+      ],
+      "top_altitude": "N/A",
+      "transitions": [
+        "FLW",
+        "RZS",
+        "GVO",
+        "SXC"
+      ],
+      "type": "HYBRID",
+      "waypoints": [
+        "SEGUL",
+        "CYPRS",
+        "MCKEY",
+        "MQO",
+        "FLW",
+        "RZS",
+        "GVO",
+        "DAISY",
+        "BENET",
+        "SXC"
+      ]
+    },
+    "HUSSH2": {
+      "name": "HUSSH2",
+      "rnav": true,
+      "runways": [
+        "30"
+      ],
+      "top_altitude": "FL190",
+      "transitions": [
+        "GOBBS",
+        "GRTFL",
+        "DEDHD",
+        "ORRCA",
+        "MOGEE",
+        "TIPRE",
+        "SYRAH"
+      ],
+      "type": "PILOT",
+      "waypoints": [
+        "HUSSH",
+        "NIITE",
+        "GOBBS",
+        "REBAS",
+        "GRTFL",
+        "DEDHD",
+        "ORRCA",
+        "MOGEE",
+        "TAMMM",
+        "TIPRE",
+        "SYRAH"
+      ]
+    },
+    "KATFH3": {
+      "name": "KATFH3",
+      "rnav": true,
+      "runways": [
+        "10L",
+        "10R",
+        "12"
+      ],
+      "top_altitude": "N/A",
+      "transitions": [
+        "NTELL",
+        "KAYEX",
+        "SUSEY",
+        "KTINA"
+      ],
+      "type": "PILOT",
+      "waypoints": [
+        "ROWLY",
+        "VYYDA",
+        "KATFH",
+        "MCOVY",
+        "NTELL",
+        "KAYEX",
+        "SUSEY",
+        "KTINA",
+        "CISKO",
+        "EBAYE",
+        "LOSHN"
+      ]
+    },
+    "NIMI5": {
+      "name": "NIMITZ5",
+      "rnav": false,
+      "runways": [
+        "28L",
+        "28R",
+        "30"
+      ],
+      "top_altitude": "N/A",
+      "transitions": [],
+      "type": "RADAR",
+      "waypoints": [
+        "PYE",
+        "SGD",
+        "SAC",
+        "CCR",
+        "SAU"
+      ]
+    },
+    "NUEVO8": {
+      "name": "NUEVO8",
+      "rnav": false,
+      "runways": [
+        "28L",
+        "28R",
+        "30"
+      ],
+      "top_altitude": "N/A",
+      "transitions": [
+        "SHOEY",
+        "SNS"
+      ],
+      "type": "HYBRID",
+      "waypoints": [
+        "SAPLY",
+        "EUGEN",
+        "SHOEY",
+        "SNS",
+        "SAU"
+      ]
+    },
+    "OAK5": {
+      "name": "OAKLAND5",
+      "rnav": false,
+      "runways": [
+        "10L",
+        "10R",
+        "12",
+        "28L",
+        "28R",
+        "30"
+      ],
+      "top_altitude": "N/A",
+      "transitions": [],
+      "type": "RADAR",
+      "waypoints": [
+        "ENI",
+        "RBL",
+        "SAC",
+        "SGD",
+        "OSI",
+        "PXN",
+        "AVE",
+        "FLW",
+        "LIN",
+        "GRTFL",
+        "DEDHD",
+        "ORRCA",
+        "SYRAH",
+        "MOGEE",
+        "TIPRE",
+        "SEGUL",
+        "CYPRS",
+        "NTELL",
+        "CISKO",
+        "EBAYE",
+        "LOSHN",
+        "ALCOA",
+        "BEBOP",
+        "CINNY"
+      ]
+    },
+    "QUAKE2": {
+      "name": "QUAKE2",
+      "rnav": false,
+      "runways": [
+        "10L",
+        "10R",
+        "12",
+        "28L",
+        "28R",
+        "30"
+      ],
+      "top_altitude": "N/A",
+      "transitions": [],
+      "type": "RADAR",
+      "waypoints": [
+        "OSI",
+        "NTELL",
+        "KAYEX",
+        "SUSEY",
+        "KTINA",
+        "LIBBO",
+        "FFOIL",
+        "ALCOA",
+        "BEBOP",
+        "CINNY",
+        "ALANN",
+        "ALLBE",
+        "BAART"
+      ]
+    },
+    "SALAD5": {
+      "name": "SALAD5",
+      "rnav": false,
+      "runways": [
+        "28L",
+        "28R"
+      ],
+      "top_altitude": "N/A",
+      "transitions": [
+        "ALTAM"
+      ],
+      "type": "PILOT",
+      "waypoints": [
+        "SALAD",
+        "ALTAM",
+        "SGD"
+      ]
+    },
+    "SKYL1": {
+      "name": "SKYLINE1",
+      "rnav": false,
+      "runways": [
+        "10L",
+        "10R",
+        "12",
+        "28L",
+        "28R",
+        "30"
+      ],
+      "top_altitude": "N/A",
+      "transitions": [
+        "PXN",
+        "AVE",
+        "FLW"
+      ],
+      "type": "HYBRID",
+      "waypoints": [
+        "SIXDY",
+        "SIWBI",
+        "SIZXO",
+        "WAGES",
+        "PXN",
+        "AVE",
+        "FLW",
+        "PORTE",
+        "OSI",
+        "DEDHD",
+        "ORRCA",
+        "TIPRE",
+        "SYRAH",
+        "NTELL",
+        "CISKO",
+        "EBAYE",
+        "LOSHN"
+      ]
+    },
+    "SLNT3": {
+      "name": "SILENT3",
+      "rnav": false,
+      "runways": [
+        "30"
+      ],
+      "top_altitude": "N/A",
+      "transitions": [
+        "ENI",
+        "RBL",
+        "SAC",
+        "LIN"
+      ],
+      "type": "PILOT",
+      "waypoints": [
+        "SFO",
+        "SAU",
+        "REBAS",
+        "SASSU",
+        "ENI",
+        "SAWNA",
+        "RBL",
+        "SAC",
+        "LIN"
+      ]
+    },
+    "SUNNE1": {
+      "name": "SUNNE1",
+      "rnav": false,
+      "runways": [
+        "28L",
+        "28R",
+        "30"
+      ],
+      "top_altitude": "5000",
+      "transitions": [],
+      "type": "RADAR",
+      "waypoints": [
+        "SUNNE"
+      ]
+    }
+  },
+  "vfr_departures": {
+    "OAKE": [
+      {
+        "altitude": "AOB 2000",
+        "departure_frequency": "GROVE",
+        "direction": [
+          "N",
+          "NW"
+        ],
+        "instructions": "Follow I-880"
+      },
+      {
+        "altitude": "AOB 2500",
+        "departure_frequency": "GROVE",
+        "direction": [
+          "NE"
+        ],
+        "instructions": "On course"
+      },
+      {
+        "altitude": "AOB 2500",
+        "departure_frequency": "GROVE",
+        "direction": [
+          "E",
+          "SE"
+        ],
+        "instructions": "Remain north of Lake Chabot"
+      },
+      {
+        "altitude": "AOB 2000",
+        "departure_frequency": "GROVE",
+        "direction": [
+          "S"
+        ],
+        "instructions": "Remain south of the San Mateo Bridge Toll Plaza"
+      },
+      {
+        "altitude": "",
+        "departure_frequency": "",
+        "direction": [
+          "SFO"
+        ],
+        "instructions": "Coordinate with NCT CIC/TMU, SFO LC, NCT or ZOA"
+      },
+      {
+        "altitude": "***",
+        "departure_frequency": "***",
+        "direction": [
+          "SW",
+          "W"
+        ],
+        "instructions": "***"
+      }
+    ],
+    "SFOE": [
+      {
+        "altitude": "AOB 2500",
+        "departure_frequency": "RICHMOND",
+        "direction": [
+          "E",
+          "NE"
+        ],
+        "instructions": "Remain north of Lake Chabot"
+      },
+      {
+        "altitude": "AOB 1500",
+        "departure_frequency": "GROVE",
+        "direction": [
+          "N",
+          "NW"
+        ],
+        "instructions": "Follow I-880"
+      },
+      {
+        "altitude": "",
+        "departure_frequency": "",
+        "direction": [
+          "SFO"
+        ],
+        "instructions": "Coordinate with NCT CIC/TMU, SFO LC, NCT or ZOA"
+      },
+      {
+        "altitude": "***",
+        "departure_frequency": "***",
+        "direction": [
+          "SE",
+          "S",
+          "SW",
+          "W"
+        ],
+        "instructions": "***"
+      }
+    ],
+    "SFOW": [
+      {
+        "altitude": "AOB 2000",
+        "departure_frequency": "RICHMOND",
+        "direction": [
+          "N",
+          "NW"
+        ],
+        "instructions": "Follow I-880"
+      },
+      {
+        "altitude": "AOB 2500",
+        "departure_frequency": "RICHMOND",
+        "direction": [
+          "NE"
+        ],
+        "instructions": "On course"
+      },
+      {
+        "altitude": "AOB 2500",
+        "departure_frequency": "GROVE",
+        "direction": [
+          "E",
+          "SE"
+        ],
+        "instructions": "Remain north of Lake Chabot"
+      },
+      {
+        "altitude": "AOB 2000",
+        "departure_frequency": "GROVE",
+        "direction": [
+          "S"
+        ],
+        "instructions": "Remain south of the San Mateo Bridge Toll Plaza"
+      },
+      {
+        "altitude": "",
+        "departure_frequency": "",
+        "direction": [
+          "SFO"
+        ],
+        "instructions": "Coordinate with NCT CIC/TMU, SFO LC, NCT or ZOA"
+      },
+      {
+        "altitude": "***",
+        "departure_frequency": "***",
+        "direction": [
+          "SW",
+          "W"
+        ],
+        "instructions": "***"
+      }
+    ]
+  }
+}

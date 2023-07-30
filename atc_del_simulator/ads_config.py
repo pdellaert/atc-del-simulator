@@ -1,9 +1,11 @@
+"""Represents the config of the ADS"""
+import json
 import requests
 from rich.console import Console
 from tinydb import TinyDB
 
 
-class AdsConfig(object):
+class AdsConfig:
     """Class representing the ADS Config with relevant data to be shared across methods"""
 
     def __init__(self, aeroapi_token="", avwx_token="", database="", verbose=False):
@@ -17,6 +19,8 @@ class AdsConfig(object):
             "details": False,
             "use_cache": False,
             "rich_console": Console(),
+            "rules_file": None,
+            "rules": {},
             "verbose": verbose,
         }
         self.set_api_token(session_name="aeroapi_session", api_token=aeroapi_token)
@@ -51,6 +55,7 @@ class AdsConfig(object):
         self.set_property("db_connection", TinyDB(self.get_property("database")))
 
     def validate(self):
+        """Validate inputs"""
         errors = []
         if self.get_property("use_cache") and not self.get_property("database"):
             errors.append("Cache enabled but no database provided.")
@@ -59,3 +64,11 @@ class AdsConfig(object):
         if not self.get_property("use_cache") and self.get_property("details") and not self.get_property("avwx_token"):
             errors.append("Cache disabled and details are enabled, but no AVWX token set")
         return errors
+
+    def load_rules(self):
+        """Load the rules file"""
+        file = self.get_property("rules_file")
+        if file:
+            self.set_property("rules", json.load(file))
+        else:
+            self.set_property("rules", {})

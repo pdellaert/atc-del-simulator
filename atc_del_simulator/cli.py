@@ -6,7 +6,14 @@ from rich.console import Console
 from rich.table import Table
 from rich.prompt import Prompt
 from tinydb import TinyDB, where, Query
-from atc_del_simulator import AdsConfig, get_flight_plans, fetch_aircraft, fetch_operator, generate_vfr
+from atc_del_simulator import (
+    AdsConfig,
+    get_ifr_flight_plans,
+    fetch_aircraft,
+    fetch_operator,
+    generate_vfr_flight_plans,
+    get_rules_info,
+)
 
 pass_ads_config = click.make_pass_decorator(AdsConfig, ensure=True)
 
@@ -29,8 +36,15 @@ pass_ads_config = click.make_pass_decorator(AdsConfig, ensure=True)
     "-d",
     "--database",
     type=click.Path(exists=True),
-    envvar="ADE_DATABASE",
+    envvar="ADS_DATABASE",
     help="Point to a SQLite database file.",
+)
+@click.option(
+    "-r",
+    "--rules-file",
+    type=click.File(mode="r"),
+    envvar="ADS_RULES",
+    help="Provide a JSON rules file to provide verification details.",
 )
 @click.option(
     "-v",
@@ -41,7 +55,7 @@ pass_ads_config = click.make_pass_decorator(AdsConfig, ensure=True)
     help="Enable verbose mode.",
 )
 @pass_ads_config
-def cli(ads_config: AdsConfig, aeroapi_token, avwx_token, database, verbose):
+def cli(ads_config: AdsConfig, aeroapi_token, avwx_token, database, rules_file, verbose):
     """Standard CLI for ADS"""
     ads_config.set_api_token(session_name="aeroapi_session", api_token=aeroapi_token)
     ads_config.set_api_token(session_name="avwx_session", api_token=avwx_token)
@@ -49,6 +63,9 @@ def cli(ads_config: AdsConfig, aeroapi_token, avwx_token, database, verbose):
     if database:
         ads_config.set_property(property_name="database", property_value=database)
         ads_config.start_db()
+    if rules_file:
+        ads_config.set_property(property_name="rules_file", property_value=rules_file)
+        ads_config.load_rules()
 
 
 @cli.command()
@@ -79,6 +96,11 @@ def cli(ads_config: AdsConfig, aeroapi_token, avwx_token, database, verbose):
     help="Number of flight plans to show.",
 )
 @click.option(
+    "-r",
+    "--runway-configuration",
+    help="Define a runway configuration to check the rules against, will only have an affect if a set of rules is provided.",
+)
+@click.option(
     "-v", "--vfr-number", default=0, show_default=True, help="Include a number of VFR routes in the training."
 )
 @click.option(
@@ -88,7 +110,7 @@ def cli(ads_config: AdsConfig, aeroapi_token, avwx_token, database, verbose):
     help="Provide a waypoint that must be part of the route. Only works when `--cache` is enabled.",
 )
 @pass_ads_config
-def route(ads_config: AdsConfig, origin_icao, cache, details, number, vfr_number, waypoint):
+def route(ads_config: AdsConfig, origin_icao, cache, details, number, runway_configuration, vfr_number, waypoint):
     """Fetch and display routes for departures from the provided ICAO"""
     ads_config.set_property("use_cache", cache)
     ads_config.set_property("details", details)
@@ -116,6 +138,9 @@ def route(ads_config: AdsConfig, origin_icao, cache, details, number, vfr_number
             ":white_check_mark:" if ads_config.get_property(property_name="use_cache") else ":x:",
         )
         table.add_row("Database", ads_config.get_property("database"))
+        table.add_row(
+            "Rules file", ads_config.get_property("rules_file").name if ads_config.get_property("rules_file") else ""
+        )
         table.add_row("Details", ":white_check_mark:" if details else ":x:")
         table.add_row("Number", f"{number}")
         table.add_row("Origin ICAO", origin_icao)
@@ -127,7 +152,7 @@ def route(ads_config: AdsConfig, origin_icao, cache, details, number, vfr_number
     with console.status("Loading flight plans..."):
         flight_plans = []
         if number > 0:
-            ifr_flight_plans = get_flight_plans(
+            ifr_flight_plans = get_ifr_flight_plans(
                 ads_config=ads_config,
                 origin=origin_icao,
                 number=number - vfr_number,
@@ -136,7 +161,7 @@ def route(ads_config: AdsConfig, origin_icao, cache, details, number, vfr_number
             )
             flight_plans.extend(ifr_flight_plans)
         if vfr_number > 0:
-            vfr_flight_plans = generate_vfr(
+            vfr_flight_plans = generate_vfr_flight_plans(
                 ads_config=ads_config, origin=origin_icao, number=vfr_number, details=details
             )
             flight_plans.extend(vfr_flight_plans)
@@ -175,21 +200,21 @@ def route(ads_config: AdsConfig, origin_icao, cache, details, number, vfr_number
         route_table.add_column(justify="left", width=75)
         route_table.add_row("Route", flight_plan["route"])
         top_table = Table(
-            title=f'Flight Plan - {flight_plan["ident"]} - {count}/{number}',
+            title=f'Flight Plan - {flight_plan["ident"]} - {count}/{number}{" - " + runway_configuration if runway_configuration else ""}',
             show_header=False,
             title_justify="left",
         )
-        top_table.add_column(justify="left")
+        top_table.add_column(justify="left", width=100)
         top_table.add_row(field_table)
         top_table.add_row(route_table)
         console.print(top_table)
         command = Prompt.ask(
             "Select an action (d)etails or (N)ext" if details else "Press enter to view the (N)ext flight plan",
-            choices=["d", "N"] if details else ["N"],
-            default="N" if details else "N",
+            choices=["D", "n"] if details else ["N"],
+            default="D" if details else "N",
         )
 
-        if details and command == "d":
+        if details and command == "D":
             with console.status("Loading operator and aircraft details..."):
                 flight_plan["operator_details"] = fetch_operator(
                     ads_config=ads_config, icao=flight_plan["operator_icao"].strip()
@@ -242,6 +267,89 @@ def route(ads_config: AdsConfig, origin_icao, cache, details, number, vfr_number
             top_table.add_section()
             top_table.add_row(data_table)
             top_table.add_row(metar_table)
+            if ads_config.get_property("rules") and runway_configuration:
+                top_table.add_section()
+                rules_details = get_rules_info(
+                    ads_config=ads_config, flight_plan=flight_plan, runway_configuration=runway_configuration
+                )
+                rules_table = Table(padding=(0, 0), show_edge=False, show_lines=False, show_header=False)
+                rules_table.add_column(justify="right", width=20)
+                rules_table.add_column(justify="left", width=20)
+                rules_table.add_column(justify="right", width=20)
+                rules_table.add_column(justify="left", width=30)
+                full_clearance = ""
+                if "VFR" not in flight_plan["route"]:
+                    rules_table.add_row(
+                        "SID",
+                        rules_details["sid_details"]["name"] if rules_details["sid_details"] else "",
+                        "Type",
+                        rules_details["sid_details"]["type"] if rules_details["sid_details"] else "",
+                    )
+                    rules_table.add_row(
+                        "Dep Transition", rules_details["dep_transition"], "Dep Waypoint", rules_details["dep_waypoint"]
+                    )
+                    rules_table.add_row(
+                        "CVS",
+                        str(rules_details["dep_details"]["cvs"]) if rules_details["dep_details"] else "",
+                        "Top Altitude",
+                        rules_details["dep_details"]["top_altitude"] if rules_details["dep_details"] else "",
+                    )
+                    rules_table.add_row(
+                        "Dep Frequency",
+                        rules_details["dep_frequency"],
+                        "Aircraft types",
+                        ", ".join(rules_details["dep_details"]["aircraft_types"])
+                        if rules_details["dep_details"]
+                        else "",
+                    )
+                    full_clearance = (
+                        f'{flight_plan["ident"]}, {origin_icao} GND, Cleared to {flight_plan["destination_icao"]}, '
+                    )
+                    if rules_details["sid_details"]:
+                        full_clearance += f'{rules_details["sid_details"]["name"]} departure, '
+                    else:
+                        full_clearance += "direct, "
+                    if rules_details["dep_transition"]:
+                        full_clearance += f'{rules_details["dep_transition"]} transition, then as filed, '
+                    elif rules_details["dep_waypoint"]:
+                        if rules_details["sid_details"] and rules_details["sid_details"]["type"] == "RADAR":
+                            full_clearance += "Radar vectors "
+                        full_clearance += f'{rules_details["dep_waypoint"]}, then as filed, '
+                    if rules_details["dep_details"] and rules_details["dep_details"]["cvs"]:
+                        full_clearance += "Climb via SID, "
+                        if rules_details["dep_details"]["top_altitude"] != "SID":
+                            full_clearance += f'Except maintain {rules_details["dep_details"]["top_altitude"]}, '
+                    elif rules_details["dep_details"]:
+                        full_clearance += f'Maintain {rules_details["dep_details"]["top_altitude"]}, '
+                    if rules_details["dep_frequency"]:
+                        full_clearance += f'Departure frequency {rules_details["dep_frequency"]}, '
+                    if flight_plan["squawk"]:
+                        full_clearance += f'Squawk {flight_plan["squawk"]:04d}'
+                else:
+                    vfr_table = Table(padding=(0, 0), show_edge=False, show_lines=False, show_header=False)
+                    vfr_table.add_column(justify="right", width=20)
+                    vfr_table.add_column(justify="left", width=70)
+                    vfr_table.add_row("VFR Instructions", rules_details["vfr_instructions"])
+                    top_table.add_row(vfr_table)
+                    rules_table.add_row(
+                        "VFR Altitude",
+                        rules_details["vfr_altitude"],
+                        "Dep Frequency",
+                        rules_details["dep_frequency"],
+                    )
+                    full_clearance = f'{flight_plan["ident"]}, {origin_icao} GND, '
+                    if rules_details["vfr_instructions"]:
+                        full_clearance += f'On departure {rules_details["vfr_instructions"]}, '
+                    if rules_details["vfr_altitude"]:
+                        full_clearance += f'Maintain VFR {rules_details["vfr_altitude"]}, '
+                    if rules_details["dep_frequency"]:
+                        full_clearance += f'Departure frequency {rules_details["dep_frequency"]}, '
+                    if flight_plan["squawk"]:
+                        full_clearance += f'Squawk {flight_plan["squawk"]:04d}'
+                top_table.add_row(rules_table)
+                if full_clearance:
+                    top_table.add_section()
+                    top_table.add_row(full_clearance)
             console.clear()
             console.print(top_table)
             Prompt.ask("Press enter to view the (N)ext flight plan", choices=["N"], default="N")

@@ -36,14 +36,14 @@ VFR_AIRCRAFT_TYPES = [
     "P28R",
 ]
 VFR_ROUTES = [
-    "NORTH",
-    "NORTHEAST",
-    "EAST",
-    "SOUTHEAST",
-    "SOUTH",
-    "SOUTHWEST",
-    "WEST",
-    "NORTHWEST",
+    "N",
+    "NE",
+    "E",
+    "SE",
+    "S",
+    "SW",
+    "W",
+    "NW",
     "SFO",
 ]
 
@@ -161,7 +161,7 @@ def fetch_raw_metar(ads_config: AdsConfig, icao):
     return ""
 
 
-def generate_vfr(ads_config: AdsConfig, origin, number, details):
+def generate_vfr_flight_plans(ads_config: AdsConfig, origin, number, details):
     """Returns a set of VFR requests"""
     flight_plans = []
     origin_metar = ""
@@ -181,12 +181,13 @@ def generate_vfr(ads_config: AdsConfig, origin, number, details):
             "operator_details": {},
             "route": f"VFR {random.choice(VFR_ROUTES)}",
             "squawk": random.randint(100, 6999),
+            "rules_details": {},
         }
         flight_plans.append(flight_plan)
     return flight_plans
 
 
-def get_flight_plans(ads_config: AdsConfig, origin, number, details, waypoint):
+def get_ifr_flight_plans(ads_config: AdsConfig, origin, number, details, waypoint):
     """Returns a set of flight plans for the user to look at with extra details if requested"""
     flight_plans = []
     origin_metar = ""
@@ -247,6 +248,85 @@ def get_flight_plans(ads_config: AdsConfig, origin, number, details, waypoint):
             "operator_details": {},
             "route": route,
             "squawk": squawk,
+            "rules_details": {},
         }
         flight_plans.append(flight_plan)
     return flight_plans
+
+
+def get_rules_info(ads_config: AdsConfig, flight_plan, runway_configuration):
+    """Checks the rules for relevant information for the flight plan"""
+    rules_details = {
+        "dep_details": {},
+        "dep_frequency": "",
+        "dep_transition": "",
+        "dep_waypoint": "",
+        "sid_details": {},
+        "vfr_altitude": "",
+        "vfr_instructions": "",
+    }
+    rules = ads_config.get_property("rules")
+    if flight_plan["route"] and "VFR" not in flight_plan["route"] and "ifr_departures" in rules and "sids" in rules:
+        # IFR flight plan
+        route_waypoints = flight_plan["route"].split(" ")
+        if route_waypoints[0] in rules["sids"] and runway_configuration in rules["runway_configurations"]:
+            sid = rules["sids"][route_waypoints[0]]
+            for ifr_departure in rules["ifr_departures"][runway_configuration]:
+                if ifr_departure["sid"] != route_waypoints[0]:
+                    continue
+                rules_details["sid_details"] = sid
+                # If there are no waypoints mentioned in the ifr_departure, but it matches, it auto applies
+                if len(ifr_departure["waypoints"]) == 0:
+                    rules_details["dep_details"] = ifr_departure
+                    for transition in sid["transitions"]:
+                        if transition in route_waypoints:
+                            rules_details["dep_transition"] = transition
+                            break
+                    for waypoint in route_waypoints:
+                        if waypoint in sid["waypoints"]:
+                            rules_details["dep_waypoint"] = waypoint
+                            break
+                    break
+                # Check if the transition exists in the route, if so the departure is using the transition
+                for transition in sid["transitions"]:
+                    if transition in route_waypoints:
+                        rules_details["dep_transition"] = transition
+                        rules_details["dep_waypoint"] = transition
+                        break
+                if rules_details["dep_transition"]:
+                    rules_details["dep_details"] = ifr_departure
+                    break
+                # Check if any of the waypoints exist in the route,
+                # if so the departure is just using a waypoint not a transition
+                for waypoint in route_waypoints:
+                    if waypoint in ifr_departure["waypoints"]:
+                        rules_details["dep_waypoint"] = waypoint
+                        break
+                if rules_details["dep_waypoint"]:
+                    rules_details["dep_details"] = ifr_departure
+                    break
+    if (
+        flight_plan["route"]
+        and "VFR" in flight_plan["route"]
+        and "vfr_departures" in rules
+        and runway_configuration in rules["runway_configurations"]
+    ):
+        # VFR flight plan
+        vfr_direction = flight_plan["route"].split(" ")[1]
+        for vfr_departure in rules["vfr_departures"][runway_configuration]:
+            if vfr_direction in vfr_departure["direction"]:
+                rules_details["dep_details"] = vfr_departure
+                rules_details["vfr_altitude"] = vfr_departure["altitude"]
+                rules_details["vfr_instructions"] = vfr_departure["instructions"]
+                break
+    if (
+        "departure_frequency" in rules_details["dep_details"]
+        and "departure_frequencies" in rules
+        and rules_details["dep_details"]["departure_frequency"] in rules["departure_frequencies"]
+    ):
+        rules_details["dep_frequency"] = rules["departure_frequencies"][
+            rules_details["dep_details"]["departure_frequency"]
+        ]
+
+    flight_plan["rules_details"] = rules_details
+    return rules_details
