@@ -1145,18 +1145,11 @@
         "altitude": "",
         "departure_frequency": "",
         "direction": [
+          "SW",
+          "W",
           "SFO"
         ],
         "instructions": "Coordinate with NCT CIC/TMU, SFO LC, NCT or ZOA"
-      },
-      {
-        "altitude": "***",
-        "departure_frequency": "***",
-        "direction": [
-          "SW",
-          "W"
-        ],
-        "instructions": "***"
       }
     ]
   }
