@@ -161,7 +161,7 @@
         "departure_frequency": "RICHMOND",
         "heading": "",
         "runways": [],
-        "sid": "OAK5",
+        "sid": "OAK6",
         "top_altitude": "3000",
         "waypoints": [
           "SGD",
@@ -189,7 +189,7 @@
         "departure_frequency": "SUTRO",
         "heading": "",
         "runways": [],
-        "sid": "OAK5",
+        "sid": "OAK6",
         "top_altitude": "3000",
         "waypoints": [
           "ALCOA",
@@ -317,7 +317,7 @@
         "departure_frequency": "RICHMOND",
         "heading": "",
         "runways": [],
-        "sid": "OAK5",
+        "sid": "OAK6",
         "top_altitude": "FL190",
         "waypoints": [
           "SGD",
@@ -344,7 +344,7 @@
         "departure_frequency": "RICHMOND",
         "heading": "",
         "runways": [],
-        "sid": "OAK5",
+        "sid": "OAK6",
         "top_altitude": "10000",
         "waypoints": [
           "SGD",
@@ -372,7 +372,7 @@
         "departure_frequency": "SUTRO",
         "heading": "",
         "runways": [],
-        "sid": "OAK5",
+        "sid": "OAK6",
         "top_altitude": "10000",
         "waypoints": [
           "ALCOA",
@@ -844,8 +844,8 @@
         "SAU"
       ]
     },
-    "OAK5": {
-      "name": "OAKLAND5",
+    "OAK6": {
+      "name": "OAKLAND6",
       "rnav": false,
       "runways": [
         "10L",
